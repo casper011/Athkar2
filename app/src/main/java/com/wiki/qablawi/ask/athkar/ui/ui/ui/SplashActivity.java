@@ -3,10 +3,8 @@ package com.wiki.qablawi.ask.athkar.ui.ui.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import com.wiki.qablawi.ask.athkar.R;
@@ -19,7 +17,7 @@ public class SplashActivity extends AppCompatActivity {
     @BindView(R.id.image)
     ImageView image;
 
-    private Animation frombottom;
+    private Animation fadein;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +28,8 @@ public class SplashActivity extends AppCompatActivity {
 
     public void init() {
         ButterKnife.bind(this);
-        frombottom = AnimationUtils.loadAnimation(this, R.anim.frombottom);
-        image.setAnimation(frombottom);
+        fadein = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        image.setAnimation(fadein);
 
         new Handler().postDelayed(new Runnable() {
             @Override
