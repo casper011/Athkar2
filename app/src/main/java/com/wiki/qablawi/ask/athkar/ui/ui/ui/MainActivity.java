@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.google.android.material.navigation.NavigationView;
 import com.wiki.qablawi.ask.athkar.R;
+import com.wiki.qablawi.ask.athkar.ui.ui.animationutils.AnimationUtils;
 import com.wiki.qablawi.ask.athkar.ui.ui.database.DatabaseHelper;
 import com.wiki.qablawi.ask.athkar.ui.ui.viewmodel.ViewModel;
 
@@ -21,7 +22,9 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +39,7 @@ import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTouch;
 import butterknife.Optional;
 
 
@@ -77,7 +81,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Log.e("asdsadas", "asdasdasdasd");
         init();
 
     }
@@ -196,50 +199,77 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     @Optional
-    @OnClick({R.id.back_image_button, R.id.next_image_button, R.id.play_image_button, R.id.share_image_button, R.id.content_constraint_layout})
-    void onButtonsClick(View view) {
-        switch (view.getId()) {
-            case R.id.back_image_button:
-                if (count == 0) {
-                    count = items.size() - 1;
-                    contentTextView.setText(items.get(count));
-                    itemCountTextView.setText(String.valueOf(count + 1));
-                } else {
-                    contentTextView.setText(items.get(--count));
-                    itemCountTextView.setText(String.valueOf(count + 1));
-                }
-                repeatCount = 0;
-                repeat.setText(String.valueOf(repeatCount));
-                break;
-            case R.id.next_image_button:
-                if (count == items.size() - 1) {
-                    count = 0;
-                    contentTextView.setText(items.get(count));
-                    itemCountTextView.setText(String.valueOf(count + 1));
-                } else {
-                    contentTextView.setText(items.get(++count));
-                    itemCountTextView.setText(String.valueOf(count + 1));
-                }
-                repeatCount = 0;
-                repeat.setText(String.valueOf(repeatCount));
-                break;
-            case R.id.play_image_button:
-                Toast.makeText(this, "play button is clicked", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.share_image_button:
-                Toast.makeText(this, "share button is clicked", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.content_constraint_layout:
-                repeatCount++;
-                repeat.setText(String.valueOf(repeatCount));
-                break;
+    @OnTouch({R.id.back_image_button, R.id.next_image_button, R.id.play_image_button, R.id.share_image_button})
+    boolean onButtonsTouched(View view, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN)
+            switch (view.getId()) {
+                case R.id.back_image_button:
+                    AnimationUtils.leftArrowButtonAnimation(backImageButton);
+                    if (count == 0) {
+                        count = items.size() - 1;
+                        contentTextView.setText(items.get(count));
+                        itemCountTextView.setText(String.valueOf(count + 1));
+                    } else {
+                        contentTextView.setText(items.get(--count));
+                        itemCountTextView.setText(String.valueOf(count + 1));
+                    }
+                    repeatCount = 0;
+                    repeat.setText(String.valueOf(repeatCount));
+                    break;
+                case R.id.next_image_button:
+                    AnimationUtils.rightArrowAnimation(nextImageButton);
+                    if (count == items.size() - 1) {
+                        count = 0;
+                        contentTextView.setText(items.get(count));
+                        itemCountTextView.setText(String.valueOf(count + 1));
+                    } else {
+                        contentTextView.setText(items.get(++count));
+                        itemCountTextView.setText(String.valueOf(count + 1));
+                    }
+                    repeatCount = 0;
+                    repeat.setText(String.valueOf(repeatCount));
+                    break;
+                case R.id.play_image_button:
+                    Toast.makeText(this, "play button is clicked", Toast.LENGTH_SHORT).show();
+                    AnimationUtils.buttonAnimation(playImageButton);
+                    break;
+                case R.id.share_image_button:
+                    Toast.makeText(this, "share button is clicked", Toast.LENGTH_SHORT).show();
+                    AnimationUtils.buttonAnimation(shareImageButton);
+                    break;
+            }
+        else if (event.getAction() == MotionEvent.ACTION_UP) {
+            switch (view.getId()) {
+                case R.id.next_image_button:
+                    AnimationUtils.removeRightArrowAnimation(nextImageButton);
+                    break;
+                case R.id.back_image_button:
+                    AnimationUtils.removeLeftArrowButtonAnimation(backImageButton);
+                    break;
+                case R.id.share_image_button:
+                    AnimationUtils.removeButtonAnimation(shareImageButton);
+                    break;
+                case R.id.play_image_button:
+                    AnimationUtils.removeButtonAnimation(playImageButton);
+                    break;
+            }
+        }
+        return true;
+    }
+
+    @Optional
+    @OnClick(R.id.content_constraint_layout)
+    void onClick(View view) {
+        if (view.getId() == R.id.content_constraint_layout) {
+            Log.e("TAG", "constraint layout clicked");
+            repeatCount++;
+            repeat.setText(String.valueOf(repeatCount));
         }
     }
 }
