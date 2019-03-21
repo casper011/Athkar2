@@ -1,12 +1,17 @@
 package com.wiki.qablawi.ask.athkar.ui.ui.ui;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.google.android.material.navigation.NavigationView;
 import com.wiki.qablawi.ask.athkar.R;
+import com.wiki.qablawi.ask.athkar.ui.ui.database.DatabaseHelper;
 import com.wiki.qablawi.ask.athkar.ui.ui.viewmodel.ViewModel;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -30,6 +35,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Optional;
 
 
 public class MainActivity extends AppCompatActivity
@@ -46,34 +53,60 @@ public class MainActivity extends AppCompatActivity
     TextView repeat;
     @BindView(R.id.content)
     TextView contentTextView;
-    @BindView(R.id.imageButton3)
-    ImageButton imageButton;
+    @BindView(R.id.back_image_button)
+    ImageButton backImageButton;
+    @BindView(R.id.next_image_button)
+    ImageButton nextImageButton;
+    @BindView(R.id.play_image_button)
+    ImageButton playImageButton;
+    @BindView(R.id.share_image_button)
+    ImageButton shareImageButton;
+    @BindView(R.id.content_constraint_layout)
+    ConstraintLayout constraintLayout;
 
+    private DatabaseHelper athkarDatabaseHelper;
+    private ArrayList<String> items;
     private DrawerLayout drawer;
     private ViewModel viewModel;
-
+    private int repeatCount = 0;
     private int count = 0;
+    private final String PREFS_NAME = "UserPerfsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        Log.e("asdsadas", "asdasdasdasd");
         init();
 
     }
 
     private void init() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final SharedPreferences preferences = getSharedPreferences(PREFS_NAME, 0);
+        athkarDatabaseHelper = new DatabaseHelper(this);
         setSupportActionBar(toolbar);
         viewModel = ViewModelProviders.of(this).get(ViewModel.class);
-        viewModel.getDataList().observe(this, new Observer<ArrayList<String>>() {
-            @Override
-            public void onChanged(ArrayList<String> strings) {
-                settingUpTexts(strings.size());
-                contentTextView.setText(strings.get(count));
-            }
-        });
+        if (preferences.getBoolean("my_first_time", true)) {
+            viewModel.getDataList().observe(this, new Observer<ArrayList<String>>() {
+                @Override
+                public void onChanged(ArrayList<String> strings) {
+                    for (int i = 0; i < strings.size(); i++)
+                        athkarDatabaseHelper.insertData(strings.get(i));
+                    preferences.edit().putBoolean("my_first_time", false).commit();
+                    viewAll();
+                    contentTextView.setText(items.get(count));
+                    settingUpTexts(items.size());
+                }
+            });
+        }
+        if (!preferences.getBoolean("my_first_time", true)) {
+            viewAll();
+            settingUpTexts(items.size());
+            contentTextView.setText(items.get(count));
+        }
+
         dateTextView.setText(new SimpleDateFormat("dd-MMM-yyyy").format(Calendar.getInstance().getTime()));
         dayTextView.setText(getDayOfTheWeek(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -87,9 +120,22 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void settingUpTexts(int arraySize) {
-        repeat.setText("0");
-        arrayCountTextView.setText(String.valueOf(arraySize));
-        itemCountTextView.setText(String.valueOf(1) + "/");
+        repeat.setText(String.valueOf(repeatCount));
+        arrayCountTextView.setText("/" + String.valueOf(arraySize));
+        itemCountTextView.setText(String.valueOf(1));
+    }
+
+    private void viewAll() {
+        Cursor result = athkarDatabaseHelper.getAllData();
+        items = new ArrayList<>();
+        if (result.getCount() == 0) {
+            Toast.makeText(this, "there is no data", Toast.LENGTH_SHORT).show();
+        } else {
+            StringBuffer buffer = new StringBuffer();
+            while (result.moveToNext()) {
+                items.add(result.getString(1));
+            }
+        }
     }
 
     private String getDayOfTheWeek(int day) {
@@ -122,8 +168,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(drawer)) {
-            drawer.closeDrawer(drawer);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -156,7 +202,44 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public ImageButton getImageButton() {
-        return imageButton;
+    @Optional
+    @OnClick({R.id.back_image_button, R.id.next_image_button, R.id.play_image_button, R.id.share_image_button, R.id.content_constraint_layout})
+    void onButtonsClick(View view) {
+        switch (view.getId()) {
+            case R.id.back_image_button:
+                if (count == 0) {
+                    count = items.size() - 1;
+                    contentTextView.setText(items.get(count));
+                    itemCountTextView.setText(String.valueOf(count + 1));
+                } else {
+                    contentTextView.setText(items.get(--count));
+                    itemCountTextView.setText(String.valueOf(count + 1));
+                }
+                repeatCount = 0;
+                repeat.setText(String.valueOf(repeatCount));
+                break;
+            case R.id.next_image_button:
+                if (count == items.size() - 1) {
+                    count = 0;
+                    contentTextView.setText(items.get(count));
+                    itemCountTextView.setText(String.valueOf(count + 1));
+                } else {
+                    contentTextView.setText(items.get(++count));
+                    itemCountTextView.setText(String.valueOf(count + 1));
+                }
+                repeatCount = 0;
+                repeat.setText(String.valueOf(repeatCount));
+                break;
+            case R.id.play_image_button:
+                Toast.makeText(this, "play button is clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.share_image_button:
+                Toast.makeText(this, "share button is clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.content_constraint_layout:
+                repeatCount++;
+                repeat.setText(String.valueOf(repeatCount));
+                break;
+        }
     }
 }

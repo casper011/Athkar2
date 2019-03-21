@@ -1,8 +1,10 @@
 package com.wiki.qablawi.ask.athkar.ui.ui.itemmanegar;
 
+
 import java.util.ArrayList;
 
 public class Manegar {
+
     private Manegar() {
     }
 
