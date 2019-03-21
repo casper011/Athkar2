@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background = "#fff">
+    <item
+        android:id="@+id/facebook"
+        android:icon="@drawable/ic_facebook_logo"
+        android:title="@string/facebook" />
+    <item
+        android:id="@+id/google"
+        android:icon="@drawable/ic_chrome"
+        android:title="@string/google" />
+    <item
+        android:id="@+id/github"
+        android:icon="@drawable/ic_github_character"
+        android:title="@string/github" />
+</menu>

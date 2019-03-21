@@ -9,4 +9,7 @@
     <string name="settings">الاعدادات</string>
     <string name="night">اذكار المساء</string>
     <string name="day">اذكار الصباح</string>
+    <string name ="facebook">share on facebook</string>
+    <string name ="github">share on github</string>
+    <string name ="google">share on google</string>
 </resources>

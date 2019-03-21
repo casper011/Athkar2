@@ -12,6 +12,7 @@ import com.wiki.qablawi.ask.athkar.ui.ui.animationutils.AnimationUtils;
 import com.wiki.qablawi.ask.athkar.ui.ui.database.DatabaseHelper;
 import com.wiki.qablawi.ask.athkar.ui.ui.viewmodel.ViewModel;
 
+import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -45,6 +46,7 @@ import butterknife.Optional;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    //region BindingViews
     @BindView(R.id.dateTextView)
     TextView dateTextView;
     @BindView(R.id.dayTextView)
@@ -67,7 +69,9 @@ public class MainActivity extends AppCompatActivity
     ImageButton shareImageButton;
     @BindView(R.id.content_constraint_layout)
     ConstraintLayout constraintLayout;
+    //endregion
 
+    //region VariablesNeeded
     private DatabaseHelper athkarDatabaseHelper;
     private ArrayList<String> items;
     private DrawerLayout drawer;
@@ -75,6 +79,8 @@ public class MainActivity extends AppCompatActivity
     private int repeatCount = 0;
     private int count = 0;
     private final String PREFS_NAME = "UserPerfsFile";
+
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,7 +193,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_settings) {
             Toast.makeText(this, "asdasd", Toast.LENGTH_SHORT).show();
             return true;
@@ -242,7 +247,7 @@ public class MainActivity extends AppCompatActivity
                     AnimationUtils.buttonAnimation(playImageButton);
                     break;
                 case R.id.share_image_button:
-                    Toast.makeText(this, "share button is clicked", Toast.LENGTH_SHORT).show();
+                    showPopup();
                     AnimationUtils.buttonAnimation(shareImageButton);
                     break;
             }
@@ -274,5 +279,28 @@ public class MainActivity extends AppCompatActivity
             repeatCount++;
             repeat.setText(String.valueOf(repeatCount));
         }
+    }
+
+    public void showPopup() {
+        PopupMenu popupMenu = new PopupMenu(getSupportActionBar().getThemedContext(), shareImageButton);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.facebook:
+                        Toast.makeText(getApplicationContext(),"shared on facebook", Toast.LENGTH_SHORT ).show();
+                        break;
+                    case R.id.google:
+                        Toast.makeText(getApplicationContext(), "shared on google", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.github:
+                        Toast.makeText(getApplicationContext(), "shared on github", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return true;
+            }
+        });
+        popupMenu.getMenuInflater().inflate(R.menu.share_menu, popupMenu.getMenu());
+        popupMenu.show();
     }
 }
