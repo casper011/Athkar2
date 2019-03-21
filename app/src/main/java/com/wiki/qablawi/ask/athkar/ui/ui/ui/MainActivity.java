@@ -211,6 +211,7 @@ public class MainActivity extends AppCompatActivity
             switch (view.getId()) {
                 case R.id.back_image_button:
                     AnimationUtils.leftArrowButtonAnimation(backImageButton);
+                    AnimationUtils.buttonAnimation(backImageButton);
                     if (count == 0) {
                         count = items.size() - 1;
                         contentTextView.setText(items.get(count));
@@ -224,6 +225,7 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case R.id.next_image_button:
                     AnimationUtils.rightArrowAnimation(nextImageButton);
+                    AnimationUtils.buttonAnimation(nextImageButton);
                     if (count == items.size() - 1) {
                         count = 0;
                         contentTextView.setText(items.get(count));
@@ -248,9 +250,11 @@ public class MainActivity extends AppCompatActivity
             switch (view.getId()) {
                 case R.id.next_image_button:
                     AnimationUtils.removeRightArrowAnimation(nextImageButton);
+                    AnimationUtils.removeButtonAnimation(nextImageButton);
                     break;
                 case R.id.back_image_button:
                     AnimationUtils.removeLeftArrowButtonAnimation(backImageButton);
+                    AnimationUtils.removeButtonAnimation(backImageButton);
                     break;
                 case R.id.share_image_button:
                     AnimationUtils.removeButtonAnimation(shareImageButton);
@@ -267,7 +271,6 @@ public class MainActivity extends AppCompatActivity
     @OnClick(R.id.content_constraint_layout)
     void onClick(View view) {
         if (view.getId() == R.id.content_constraint_layout) {
-            Log.e("TAG", "constraint layout clicked");
             repeatCount++;
             repeat.setText(String.valueOf(repeatCount));
         }
