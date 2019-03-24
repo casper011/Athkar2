@@ -48,6 +48,7 @@ import butterknife.Optional;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
     //region BindingViews
     @BindView(R.id.dateTextView)
     TextView dateTextView;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity
     ImageButton shareImageButton;
     @BindView(R.id.content_constraint_layout)
     ConstraintLayout constraintLayout;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     //endregion
 
     //region VariablesNeeded
@@ -82,7 +85,6 @@ public class MainActivity extends AppCompatActivity
     private int count = 0;
     private final String PREFS_NAME = "UserPerfsFile";
     private MediaPlayer cheer;
-
     //endregion
 
     @Override
@@ -91,11 +93,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         init();
-
     }
 
     private void init() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
         final SharedPreferences preferences = getSharedPreferences(PREFS_NAME, 0);
         athkarDatabaseHelper = new DatabaseHelper(this);
         setSupportActionBar(toolbar);
@@ -205,7 +205,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
