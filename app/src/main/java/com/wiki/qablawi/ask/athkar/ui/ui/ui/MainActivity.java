@@ -1,9 +1,11 @@
 package com.wiki.qablawi.ask.athkar.ui.ui.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import com.google.android.material.navigation.NavigationView;
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity
     private int repeatCount = 0;
     private int count = 0;
     private final String PREFS_NAME = "UserPerfsFile";
+    private MediaPlayer cheer;
 
     //endregion
 
@@ -92,7 +95,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void init() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         final SharedPreferences preferences = getSharedPreferences(PREFS_NAME, 0);
         athkarDatabaseHelper = new DatabaseHelper(this);
         setSupportActionBar(toolbar);
@@ -194,7 +197,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            Toast.makeText(this, "asdasd", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -243,7 +247,8 @@ public class MainActivity extends AppCompatActivity
                     repeat.setText(String.valueOf(repeatCount));
                     break;
                 case R.id.play_image_button:
-                    Toast.makeText(this, "play button is clicked", Toast.LENGTH_SHORT).show();
+                    cheer = MediaPlayer.create(MainActivity.this, R.raw.cheer);
+                    cheer.start();
                     AnimationUtils.buttonAnimation(playImageButton);
                     break;
                 case R.id.share_image_button:
@@ -265,6 +270,10 @@ public class MainActivity extends AppCompatActivity
                     AnimationUtils.removeButtonAnimation(shareImageButton);
                     break;
                 case R.id.play_image_button:
+                    if (cheer.isPlaying()) {
+                        cheer.stop();
+                        cheer.release();
+                    }
                     AnimationUtils.removeButtonAnimation(playImageButton);
                     break;
             }
@@ -288,7 +297,7 @@ public class MainActivity extends AppCompatActivity
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.facebook:
-                        Toast.makeText(getApplicationContext(),"shared on facebook", Toast.LENGTH_SHORT ).show();
+                        Toast.makeText(getApplicationContext(), "shared on facebook", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.google:
                         Toast.makeText(getApplicationContext(), "shared on google", Toast.LENGTH_SHORT).show();
